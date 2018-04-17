@@ -28,13 +28,19 @@
  *
  * Author: Alyce Brady and Garrett Olson
  * Date:   2/10/99
- *
- * WARNING: This function is incomplete !!!!!!
+ *		modified: Tim Rutledge, 4/17/2018        Completed register list and return.
  */
 
 char * getRegName (int regNbr)
   /* returns mnemonic name for given register */
 {
+	if(regNbr<0 || regNbr>31) //invalid input
+	{
+		printError("invalid input into getRegName %d",regNbr)
+		return regArray[0];
+	}
+	
+	
 	/* Create a static (persistent) array of the mnemonic names,
 	 *    each of which is a string (char *).
 	 */
@@ -43,9 +49,15 @@ char * getRegName (int regNbr)
 		"$at",
 		"$v0","$v1",
 		"$a0","$a1","$a2","$a3",
-                /* REGISTERS ARE MISSING !!! */
+        "$t0","$t1","$t2","$t3","$t4","$t5","$t6","$t7",
+		"$s0","$s1","$s2","$s3","$s4","$s5","$s6","$s7",
+		"$t8","$t9",
+		"$k0","$k1",
+		"$gp","$sp","$fp","$ra"
 	};
- 
-	/* DOES NOT RETURN CORRECT VALUE !!! */
-        return "This is not the correct return value.";
+	
+	
+	//printf("%s",regArray[regNbr]); //prints the result of regNbr
+	
+	return regArray[regNbr];
 }
