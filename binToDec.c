@@ -52,7 +52,7 @@ int binToDec (char string[], int begin, int end)
 
 	for (i = begin; i <= end; i++)
 	{
-		decimal += (((string[i] == '1') ? 1 : 0) * power (2.0,exp));
+		decimal += (((string[i] == '1') ? 1 : 0) * power (2,exp));
 		exp--;
 	}
 

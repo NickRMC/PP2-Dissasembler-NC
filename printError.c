@@ -3,9 +3,12 @@
 #include <stdlib.h>
 #include "printFuncs.h"
 
-/** Define the global ERROR_LIMIT variable. **/
-int ERROR_LIMIT = 20;
+void incrementErrorCount();
+void checkErrorCount();
 
+/** Define the global ERROR_LIMIT variable. **/
+int ERROR_LIMIT = 100;
+int error_count = 0;
 /**
  * printError(const char * restrict_format, ...)
  *
@@ -31,8 +34,6 @@ int ERROR_LIMIT = 20;
  */
 void printError(const char * restrict_format, ...)
 {
-    static int error_count = 0;
-
     /* The following code allows us to call fprintf with the variable
      * parameters that were passed to printError.
      */
@@ -43,9 +44,18 @@ void printError(const char * restrict_format, ...)
 
     /* Keep track of the error count, and exit if it goes too high. */
     error_count++;
-    if ( ERROR_LIMIT > 0 && error_count > ERROR_LIMIT )
-    {
-        exit(1);
-    }
+	checkErrorCount();
+}
 
+void incrementErrorCount()
+{
+	error_count++;
+}
+
+void checkErrorCount()
+{
+	if (ERROR_LIMIT > 0 && error_count > ERROR_LIMIT)
+	{
+		exit(1);
+	}
 }
