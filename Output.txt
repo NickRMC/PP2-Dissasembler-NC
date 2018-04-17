@@ -1,0 +1,35 @@
+Line 1: 12345678901234567890123456789012
+Error: Line 1 had characters that weren't 1 or 0.
+
+Line 2: 01010101010101010101010101010101
+        bits 4 to 8: 10101 is equal to 21
+        bits 8 to 2: 101010 is equal to 0
+        bits -10 to 7:  is equal to 0
+        bits 30 to 33: 101 is equal to 0
+        bits 1 to 32: 01010101010101010101010101010101 is equal to 1431655765
+
+Line 3:
+Error: Line 3 does not have 32 chars.
+
+Line 4: 1010110101010010101010
+Error: Line 4 does not have 32 chars.
+
+Line 5: 10020 20202 10201029031 sldkl
+Error: Line 5 does not have 32 chars.
+
+Line 6: 101010001001110100100100010010100
+Error: Line 6 does not have 32 chars.
+
+Line 7: 00000000000000000000000000000000
+        bits 4 to 8: 00000 is equal to 0
+        bits 8 to 2: 000000 is equal to 0
+        bits -10 to 7:  is equal to 0
+        bits 30 to 33: 000 is equal to 0
+        bits 1 to 32: 00000000000000000000000000000000 is equal to 0
+
+Line 8: 11111111111111111111111111111111
+        bits 4 to 8: 11111 is equal to 31
+        bits 8 to 2: 111111 is equal to 0
+        bits -10 to 7:  is equal to 0
+        bits 30 to 33: 111 is equal to 0
+        bits 1 to 32: 11111111111111111111111111111111 is equal to -1
