@@ -36,7 +36,7 @@ char * getRegName (int regNbr)
 {
 	if(regNbr<0 || regNbr>31) //invalid input
 	{
-		printError("invalid input into getRegName %d",regNbr)
+		printError("invalid input into getRegName %d",regNbr);
 		return regArray[0];
 	}
 	
