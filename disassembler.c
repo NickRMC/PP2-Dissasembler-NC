@@ -50,7 +50,12 @@
  */
 
 /* include files go here */
-#include "disUtil.h"
+#include "disassembler.h"
+
+char* processRaw(char input[]);
+char* processR(char input[]);
+char* processI(char input[]);
+char* processJ(char input[]);
 
 const int SAME = 0;		/* useful for making strcmp readable */
 						/* e.g., if (strcmp (str1, str2) == SAME) */
@@ -61,6 +66,7 @@ int main(int argc, char *argv[])
 	char   input[BUFSIZ];      /* place to store line that is read in */
 	int    length;             /* length of line read in */
 	int    lineNum = 0;        /* keep track of input line numbers */
+	char assembly[27];
 
 	/* Process command-line arguments (if any) -- input file name
 	 *    and/or debugging indicator (1 = on; 0 = off).
@@ -106,9 +112,11 @@ int main(int argc, char *argv[])
 		 * If the string is invalid, verifyMIPSinstruction should print
 		 * an informative error message.
 		 */
-		if (verifyMIPSInstruction(lineNum, buffer))
+		if (verifyMIPSInstruction(lineNum, input) == 1)
 		{
-			printf("Line %d: %s\n", lineNum, processRaw);
+			char * tempt = processRaw(input);
+			strcpy(assembly, tempt);
+			printf("Line %d: %s\n", lineNum, assembly);
 			checkErrorCount();
 		}
 	}
@@ -119,39 +127,312 @@ int main(int argc, char *argv[])
 }
 
 /*Process Raw*/
-char * processRaw(input)
+char* processRaw(char input[])
 {
+	printDebug("Processing MIPS...\n");
+
 	switch (binToDec(input, 0 ,5)) /* Checks the first 6 digits in the MIPS */
 	{
-		case 0 :
+		case 0 : /* R */
 			return processR(input);
 
-		case (2 || 3) :
+		case (2 || 3) : /* J */
 			return processJ(input);
 
-		default:
+		default : /* I */
 			return processI(input);
 	}
 }
 
 /*Process R*/
-char * processR(input)
+char* processR(char input[])
 {
+	printDebug("Processing MIPS Type R...\n");
+
+	static char assemblyInst[26] = { 0 };
+	char converted[7] = { 0 };
+	char registry[6] = { 0 };
+
 	switch (binToDec(input, 26, 31))
 	{
+		case 0 :
+			strcpy(assemblyInst, "sll ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 21, 25));
+			strcat(assemblyInst, converted);						/* Shift */
+		break;
 
+		case 2 :
+			strcpy(assemblyInst, "srl ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 21, 25));
+			strcat(assemblyInst, converted);						/* Shift */
+		break;
+
+		case 8 :
+			strcpy(assemblyInst, "jr ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, registry);							/* Registry 1*/
+		break;
+
+		case 32 :
+			strcpy(assemblyInst, "add ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		case 33 :
+			strcpy(assemblyInst, "addu ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		case 34 :
+			strcpy(assemblyInst, "sub ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		case 35 :
+			strcpy(assemblyInst, "subu ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		case 36 :
+			strcpy(assemblyInst, "and ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		case 37 :
+			strcpy(assemblyInst, "or ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		case 39 :
+			strcpy(assemblyInst, "nor ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		case 42 :
+			strcpy(assemblyInst, "slt ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		case 43 :
+			strcpy(assemblyInst, "sltu ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 16, 20)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, registry);							/* Registry 3 */
+		break;
+
+		default :
+			strcpy(assemblyInst, "Error: Unknown Function");	/* Error */
+			incrementErrorCount();								/* Error Count ++ */
+		break;
 	}
+
+	printDebug("MIPS Processed.\n");
+	return assemblyInst;
 }
 
 /*Process I*/
-char * processI(input)
+char* processI(char input[])
 {
+	printDebug("Processing MIPS Type I...\n");
 
+	static char assemblyInst[26] = { 0 };
+	char converted[10] = { 0 };
+	char registry[6] = { 0 };
+
+	switch (binToDec(input, 0, 5))
+	{
+		case 4 :
+			strcpy(assemblyInst, "beq ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 5 :
+			strcpy(assemblyInst, "bne ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 8 :
+			strcpy(assemblyInst, "addi ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 9 :
+			strcpy(assemblyInst, "addiu ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 10 :
+			strcpy(assemblyInst, "slti ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 11 :
+			strcpy(assemblyInst, "stliu ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 12 :
+			strcpy(assemblyInst, "andi ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 13 :
+			strcpy(assemblyInst, "ori ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 2 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 15 :
+			strcpy(assemblyInst, "lui ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, converted);						/* Integer */
+		break;
+
+		case 35 :
+			strcpy(assemblyInst, "lw ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, strcat(converted, "("));			/* Integer */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ")"));			/* Registry 2 */
+		break;
+
+		case 43 :
+			strcpy(assemblyInst, "sw ");							/* Function */
+			strcpy(registry, getRegName(binToDec(input, 11, 15)));
+			strcat(assemblyInst, strcat(registry, ", "));			/* Registry 1 */
+			sprintf(converted, "%d", binToDec(input, 16, 31));
+			strcat(assemblyInst, strcat(converted, "("));			/* Integer */
+			strcpy(registry, getRegName(binToDec(input, 6, 10)));
+			strcat(assemblyInst, strcat(registry, ")"));			/* Registry 2 */
+		break;
+
+		default :
+			strcpy(assemblyInst, "Error: Unknown OP Code");		/* Error */
+			incrementErrorCount();								/* Error Count ++ */
+		break;
+	}
+
+	printDebug("MIPS Processed.\n");
+	return assemblyInst;
 }
 
 
 /*Process J*/
-char * processJ(input)
+char* processJ(char input[])
 {
+	printDebug("Processing MIPS Type J...\n");
+	static char assemblyInst[16] = { 0 };
+	char converted[10] = { 0 };
 
+	switch (binToDec(input, 0, 5))
+	{
+		case 2 :
+			strcpy(assemblyInst, "j ");							/* Function */
+			sprintf(converted, "%d", binToDec(input, 6, 31));
+			strcat(assemblyInst, converted);					/* Integer */
+		break;
+
+		default : /* This will only ever be 3 */
+			strcpy(assemblyInst, "jal ");						/* Function */
+			sprintf(converted, "%d", binToDec(input, 6, 31));
+			strcat(assemblyInst, converted);					/* Integer */
+		break;
+	}
+
+	printDebug("MIPS Processed.\n");
+	return assemblyInst;
 }

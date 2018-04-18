@@ -3,12 +3,10 @@
 #include <stdlib.h>
 #include "printFuncs.h"
 
-void incrementErrorCount();
-void checkErrorCount();
-
 /** Define the global ERROR_LIMIT variable. **/
 int ERROR_LIMIT = 100;
 int error_count = 0;
+
 /**
  * printError(const char * restrict_format, ...)
  *
@@ -47,12 +45,12 @@ void printError(const char * restrict_format, ...)
 	checkErrorCount();
 }
 
-void incrementErrorCount()
+void incrementErrorCount(void)
 {
 	error_count++;
 }
 
-void checkErrorCount()
+void checkErrorCount(void)
 {
 	if (ERROR_LIMIT > 0 && error_count > ERROR_LIMIT)
 	{

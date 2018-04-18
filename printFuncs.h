@@ -46,6 +46,9 @@
 
 void printError(const char * restrict_format, ...);
 
+void incrementErrorCount(void);
+void checkErrorCount(void);
+
 extern int ERROR_LIMIT;
 
 void printDebug(const char * restrict_format, ...);

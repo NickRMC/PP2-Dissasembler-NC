@@ -9,12 +9,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>     /* May need to be _stdlib.h on some machines. */
-#include <string.h>	/* May need to be memory.h on some machines. */
+#include <string.h>	    /* May need to be memory.h on some machines. */
 #include <ctype.h>
 
 #include "printFuncs.h"
+#include "process_arguments.h"
 
-FILE * process_arguments(int argc, char * argv[]);
 int binToDec (char string[], int begin, int end);
 int verifyMIPSInstruction (int lineNum, char string[]);
 char * getRegName (int regNbr);
