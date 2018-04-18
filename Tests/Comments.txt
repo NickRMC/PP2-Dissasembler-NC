@@ -1,0 +1,45 @@
+TestCasesValid:
+OP:0, R format
+first 32 cases, testing all possible MIPS Registers. 
+next 11 cases, testing function values of
+	33, 34, 35, 36, 37, 39, 0, 2, 42, 43, and 8
+next 4 cases testing bounds of shift values for 0 (sll) and 2 (srl)
+
+OP:8, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:9, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:12, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:13, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:35, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:43, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:15, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:4, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:5, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:10, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+OP:11, I format 
+3 cases, min max and random middle value for 16 bit IMM.
+
+OP:2, J format 
+3 cases, min max and random middle value for 26 bit Pseudo-Address.
+OP:3, J format 
+3 cases, min max and random middle value for 26 bit Pseudo-Address.
+
+
+TestCasesinValid:
+OP:0, R format
+first 31 cases, testing all possible invalid MIPS shift values for add.
+first 9 cases, testing all invalid MIPS shift values for:
+	addu, sub, subu, and, or, nor, slt, sltu, jr. 
+next 53 cases, testing all invalid function values. 
+next 50 cases, testing all unused op codes.
+	1,6,7,14,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,36,37,38,
+	39,40,41,42,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63
