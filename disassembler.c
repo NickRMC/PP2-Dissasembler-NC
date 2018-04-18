@@ -136,7 +136,10 @@ char* processRaw(char input[])
 		case 0 : /* R */
 			return processR(input);
 
-		case (2 || 3) : /* J */
+		case 2 : /* J-2 */		/* For some reason (2 || 3) was not working for the case, so they are now split up */
+			return processJ(input);
+
+		case 3 : /* J-3 */
 			return processJ(input);
 
 		default : /* I */
