@@ -3,9 +3,16 @@
  *
  * This program reads lines from a file.  For each line, the program
  *      calls verifyMIPSInstruction.  If the line contains characters
- *      representing a valid MIPS instruction, the program calls
- *      binToDec for various segments of the instruction to test the
- *      binToDec function.
+ *      representing a valid binary MIPS instruction, the program 
+ *		calls binToDec for various segments of the binary string to 
+ *		determine the format, R, I, or J. Each of these formats has
+ *		a corresponding function that will use BinToDec again to 
+ *		determine the other components of the binary string (ie Registers), 
+ *		and will output the corresponding MIPS Assembly code.
+ * 		The BinToDec and verifyMIPSInstruction were extensively 
+ *		tested in the Disassembler Utilities PP.  For more information
+ *		on the testing for those functions, see the Github page below:
+ *https://github.com/comp230-2018/disassembler-utility-functions-project-tim-rutledge
  *
  * Usage:
  *          name [ filename ] [ 0|1 ]
@@ -19,22 +26,34 @@
  *      If no debugging choice is provided, the program prints debugging
  *      messages, or not, depending on indications in the code.
  *
+ *		Functionality is based off this table below:
+ *			http://www.cs.kzoo.edu/cs230/Projects/mipsTable.html
  * Input:
  *      The program reads its input from a file passed in as a parameter
  *      on the command line, or reads from the standard input.
- *      To test verifyMIPSInstruction, the file should contain ...
- *
- *              DESCRIBE NECESSARY TEST CASES HERE
+ *		See README.txt for a line by line description of all test cases, valid and invalid.
+ *		
+ *		Briefly, the main test cases needed are:
+ *      Test cases for all possible op codes.
+ *		For R format:
+ *			all possible function values.
+ *		For I, J formats, and the srl, sll R format commands 
+ *			upper and lower bound tests.
+ *		All Registers tested in all 3 positions.
  *
  * Output:
- *      For each valid line, the program prints a series of decimal
- *      numbers to test binToDec, representing
+ 
+ *		An error if the file can not be open.
+ *      For each invalid line (not 32 0's and 1's), the program prints
+ * 		an error message to stderr saying so.
+ *		For each valid 32 binary string, an error if those 32 bits do not 
+ *		correspond to a MIPS instruction given in the table, and if it does
+ *		Then the MIPS Assembly instruction will be outputted.
+ * 		
+ *		Test cases are separated into 2 files, TestCasesInvalid and TestCasesValid. 
+ *		All invalid test cases are expected to give errors.
+ *		Valid test cases should all be accepted, and output the Instruction.
  *
- *              DESCRIBE NECESSARY TEST CASES HERE
- *
- *      For each invalid line, the program prints an error message to
- *      stderr saying so.  (The program also prints an error message if
- *      it cannot open the file.)
  *
  * Implementation:
  *		I am uncertain if this is a Windows thing or a general thing,
@@ -43,10 +62,13 @@
  *		this I simply used the same logic for removing the new line and
  *		repeated it for a carriage return.
  *
- * Author:  Nicolas McCabe
+ * Author:  Nicolas McCabe, Tim Rutledge
  *
  * Creation Date:  April 15th
  *
+ * Modifications: 
+ * 		4/24/2018: Added disassembler functionality, and test cases.
+ * 		5/4/2018:  Added a factor of 4 to the j and jal functions.
  */
 
 /* include files go here */
@@ -425,13 +447,13 @@ char* processJ(char input[])
 	{
 		case 2 :
 			strcpy(assemblyInst, "j ");							/* Function */
-			sprintf(converted, "%d", binToDec(input, 6, 31));
+			sprintf(converted, "%d", (binToDec(input, 6, 31)*4));
 			strcat(assemblyInst, converted);					/* Integer */
 		break;
 
 		default : /* This will only ever be 3 */
 			strcpy(assemblyInst, "jal ");						/* Function */
-			sprintf(converted, "%d", binToDec(input, 6, 31));
+			sprintf(converted, "%d", (binToDec(input, 6, 31)*4));
 			strcat(assemblyInst, converted);					/* Integer */
 		break;
 	}
